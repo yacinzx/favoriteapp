@@ -33,6 +33,12 @@ jobs:
         run: npm run lint
 
       - name: Build
+        env:
+          # Injected from repository secrets — never committed to the repo.
+          # The anon key is browser-safe; access is enforced by Row Level
+          # Security so users can only ever touch their own favorites.
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: npm run build
 
       - name: Upload Pages artifact
