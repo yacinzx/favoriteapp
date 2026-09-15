@@ -114,6 +114,32 @@ export function FavoritesProvider({ children }) {
     [favorites],
   );
 
+  const getFavorite = useCallback(
+    (id) => favorites.find((a) => a.id === id),
+    [favorites],
+  );
+
+  const rateFavorite = useCallback(
+    (animeId, rating) => {
+      const idx = favorites.findIndex((a) => a.id === animeId);
+      if (idx === -1) return; // only favorites can be rated
+
+      const updated = { ...favorites[idx], userRating: rating };
+      const next = [...favorites];
+      next[idx] = updated;
+      setFavorites(next);
+
+      if (supabase && userId) {
+        addRemoteFavorite(userId, updated).catch(() => {
+          showToast("Could not sync your rating", "remove");
+        });
+      }
+
+      showToast(`Rated “${updated.title}” ${rating}/10`, "add");
+    },
+    [favorites, userId, showToast],
+  );
+
   const toggleFavorite = useCallback(
     (anime) => {
       const exists = favorites.some((a) => a.id === anime.id);
@@ -169,6 +195,8 @@ export function FavoritesProvider({ children }) {
       favorites,
       count: favorites.length,
       isFavorite,
+      getFavorite,
+      rateFavorite,
       toggleFavorite,
       clearFavorites,
       syncing,
@@ -177,6 +205,8 @@ export function FavoritesProvider({ children }) {
     [
       favorites,
       isFavorite,
+      getFavorite,
+      rateFavorite,
       toggleFavorite,
       clearFavorites,
       syncing,

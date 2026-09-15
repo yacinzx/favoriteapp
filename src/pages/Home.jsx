@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Card from "../components/Card.jsx";
 import { GridSkeleton } from "../components/Skeleton.jsx";
 import { searchAnimeWithFallback } from "../api/animeApi.js";
@@ -10,6 +10,20 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [source, setSource] = useState("anilist");
   const { count } = useFavorites();
+  const heroRef = useRef(null);
+
+  useEffect(() => {
+    function onScroll() {
+      const el = heroRef.current;
+      if (!el) return;
+      const y = Math.min(window.scrollY, 520);
+      el.style.transform = `translate3d(0, ${y * 0.18}px, 0)`;
+      el.style.opacity = String(Math.max(1 - y / 560, 0));
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const load = useCallback(async (q) => {
     setLoading(true);
@@ -35,7 +49,7 @@ function Home() {
 
   return (
     <div className="page">
-      <section className="hero">
+      <section className="hero" ref={heroRef}>
         <span className="hero-chip">
           <span className="pulse-dot" aria-hidden="true" />
           {count} saved {count === 1 ? "anime" : "anime"} in your list

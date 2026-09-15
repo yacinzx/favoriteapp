@@ -1,18 +1,28 @@
 import { useState } from "react";
 import { useFavorites } from "../context/useFavorites.js";
+import { useReveal } from "../hooks/useReveal.js";
+import RatingStars from "./RatingStars.jsx";
+
+const HEART_PATH =
+  "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
 
 function Card({ anime, index = 0 }) {
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const fav = isFavorite(anime.id);
+  const { getFavorite, toggleFavorite, rateFavorite } = useFavorites();
+  const stored = getFavorite(anime.id);
+  const fav = Boolean(stored);
+  const userRating = stored?.userRating ?? 0;
+
   const [imgOk, setImgOk] = useState(Boolean(anime.image));
+  const ref = useReveal();
 
   const initial = (anime.title || "?").charAt(0).toUpperCase();
   const tint = anime.color || "#8b5cf6";
 
   return (
     <article
-      className="card"
-      style={{ animationDelay: `${Math.min(index, 14) * 55}ms` }}
+      ref={ref}
+      className="card reveal"
+      style={{ "--reveal-delay": `${Math.min(index, 12) * 55}ms` }}
     >
       <div className="poster">
         {imgOk ? (
@@ -37,7 +47,7 @@ function Card({ anime, index = 0 }) {
         <div className="poster-shine" aria-hidden="true" />
 
         {anime.score && (
-          <span className="score-badge">
+          <span className="score-badge" title="Community score">
             <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -57,13 +67,19 @@ function Card({ anime, index = 0 }) {
         >
           <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
             <path
-              fill={fav ? "currentColor" : "none"
-              }
+              fill={fav ? "currentColor" : "none"}
               stroke="currentColor"
               strokeWidth="2"
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              d={HEART_PATH}
             />
           </svg>
+          {fav && (
+            <span className="spark-burst" aria-hidden="true">
+              {Array.from({ length: 6 }, (_, i) => (
+                <span key={i} className="spark" style={{ "--i": i }} />
+              ))}
+            </span>
+          )}
         </button>
 
         {anime.description && (
@@ -86,8 +102,15 @@ function Card({ anime, index = 0 }) {
             </>
           )}
         </div>
-        {anime.genres && (
-          <p className="card-genres">{anime.genres}</p>
+        {anime.genres && <p className="card-genres">{anime.genres}</p>}
+
+        {fav && (
+          <div className="card-rating">
+            <RatingStars
+              value={userRating}
+              onRate={(n) => rateFavorite(anime.id, n)}
+            />
+          </div>
         )}
       </div>
     </article>

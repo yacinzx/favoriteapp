@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useFavorites } from "../context/useFavorites.js";
 import { useAuth } from "../context/useAuth.js";
@@ -9,6 +9,21 @@ function NavBar() {
   const { isConfigured, email, signOut } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState("signin");
+  const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    function onScroll() {
+      const top = window.scrollY;
+      const height =
+        document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(height > 0 ? Math.min(top / height, 1) : 0);
+      setScrolled(top > 20);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   function openAuth(mode) {
     setAuthMode(mode);
@@ -16,7 +31,12 @@ function NavBar() {
   }
 
   return (
-    <header className="navbar">
+    <header className={"navbar" + (scrolled ? " scrolled" : "")}>
+      <span
+        className="scroll-progress"
+        style={{ transform: `scaleX(${progress})` }}
+        aria-hidden="true"
+      />
       <nav className="navbar-inner">
         <NavLink to="/" className="logo" aria-label="AniFav home">
           <span className="logo-mark" aria-hidden="true">
