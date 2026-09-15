@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AniFav · Anime Favorites</title>
+    <!--
+      GitHub Pages serves this file for any path that isn't a real file
+      (e.g. /favoriteapp/favorites on a refresh or shared link). Redirect back
+      to the app root with the requested path stored in a query param, which
+      index.html restores into the address bar before React Router boots.
+    -->
+    <script type="text/javascript">
+      (function (l) {
+        var segs = l.pathname.split("/"); // ['', 'favoriteapp', 'favorites', ...]
+        var keep = segs.slice(0, 2).join("/"); // '/favoriteapp'
+        var rest = segs.slice(2).join("/"); // 'favorites/...'
+        l.replace(keep + "/" + (rest ? "?p=/" + rest : "") + l.hash);
+      })(window.location);
+    </script>
+  </head>
+  <body>
+    <p style="font-family: sans-serif; text-align: center; margin-top: 3rem">
+      Redirecting… If nothing happens,
+      <a href="/favoriteapp/">click here</a>.
+    </p>
+  </body>
+</html>

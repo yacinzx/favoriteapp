@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Search, discover and save your favorite anime." />
     <meta name="theme-color" content="#07060d" />
@@ -12,6 +12,19 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
+    <!-- Restore the intended route after a GitHub Pages 404 redirect. -->
+    <script type="text/javascript">
+      (function (l) {
+        var m = /[?&]p=(\/[^&]*)/.exec(l.search);
+        if (m) {
+          window.history.replaceState(
+            null,
+            "",
+            l.pathname.replace(/\/$/, "") + decodeURIComponent(m[1]) + l.hash,
+          );
+        }
+      })(window.location);
+    </script>
     <title>AniFav · Anime Favorites</title>
   </head>
   <body>
